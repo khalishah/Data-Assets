@@ -6,7 +6,7 @@ This insight is the purchase amount sum function of a specified feature over a s
 
   2) Where groupColumn is defined (grouping is done based on the groupColumn definition): The resulting output will show the sum of purchase amounts at which the customer made a transaction under a specific feature grouped by the groupColumn definition.
 
-def purchase_amount_of_feature_over_a_specified_time_period(df, time_period_in_days, dateColumn = 'Transaction_Date', amountColumn = 'Local_Net_Amount', featureColumn = 'Transaction_Date', IDColumn ='Membership_No', groupColumn = None):
+def purchase_amount_of_feature_over_a_specified_time_period(df, time_period_in_days, dateColumn = 'date', amountColumn = 'sales', featureColumn = 'date', IDColumn ='customer', groupColumn = None):
     
     # df = dataframe
     # time_period_in_days = number of days before today you want to look into
