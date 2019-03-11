@@ -1,0 +1,48 @@
+## 1) Transaction Customer Asset
+
+#### Insights 1 - Unique Count Function
+
+This insight is the unique count function of a specified feature over a stated period of days. The default parameters are stated for the function below. There are possibly two dataframe outputs out of this function:-
+
+  1) Where groupColumn is None (no grouping is done): The resulting output will show number of unique counts at which transaction happened between the customer and the feature stated under featureColumn.
+
+  2) Where groupColumn is defined (grouping is done based on the groupColumn definition): The resulting output will show the number of unique counts at which the customer made a transaction under a specific feature grouped by the groupColumn definition. The resulting dataframe also includes the list of the featureColumn elements at which the transaction took place.
+
+def unique_count_of_feature_over_a_specified_time_period(df, time_period_in_days, dateColumn = 'Transaction_Date', amountColumn = 'Local_Net_Amount', featureColumn = 'Transaction_Date', IDColumn ='Membership_No', groupColumn = None):
+    
+    # df = dataframe
+    # time_period_in_days = number of days before today you want to look into
+    # dateColumn = the date column in the dataframe
+    # valueColumn = the column that you want count on
+    # variableColumn = the column that the count was based on
+    # groupColumn = the column that the aggregation was grouped by
+    
+    from datetime import date, datetime, timedelta
+    
+    filtered_df = df[df[dateColumn] < pd.Timestamp(date.today() - timedelta(days=time_period_in_days))]
+    
+    if groupColumn is None:
+        filtered_df = filtered_df.drop(filtered_df[filtered_df[amountColumn] < 0].index)
+        encode = pd.get_dummies(filtered_df[[IDColumn, featureColumn]], columns = [featureColumn])
+        encode.set_index(IDColumn, inplace = True)
+        ans = encode.groupby(level = [IDColumn]).sum().astype(int)
+        
+        columnList = []
+        for cols in ans.columns.tolist()[1:]:
+            cols_result = cols.replace(featureColumn, 'Count_of_Purchases_with') + '_in_' + str(time_period_in_days) + '_days'
+            columnList.append(cols_result)
+            
+        ans.columns = [IDColumn] + columnList
+        ans = ans.drop(IDColumn, axis = 1)
+        return ans
+    
+    else:
+        filtered_df = filtered_df.drop(filtered_df[filtered_df[amountColumn] < 0].index)
+        ##for unique count of feature per member aggregated at group
+        ans = pd.DataFrame(filtered_df.groupby([IDColumn])[featureColumn].agg(['nunique', 'unique']))
+        ##for unique count of feature per grouped item per member
+        #ans = pd.DataFrame(filtered_df.groupby([IDColumn, groupColumn])[featureColumn].agg(['nunique', 'unique']))
+        ##for number of transactions per grouped item in a specific feature per member
+        #ans = pd.DataFrame(filtered_df.groupby([IDColumn, groupColumn])[featureColumn].agg(['count', 'unique']))
+        ans.columns = [['Count_of' + '_' + featureColumn + '_' + 'in_' + str(time_period_in_days) + '_days', 'List_of' + '_' + featureColumn + '_' + 'in_' + str(time_period_in_days) + '_days']]
+        return ans
