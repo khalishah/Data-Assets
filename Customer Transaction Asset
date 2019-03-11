@@ -1,0 +1,22 @@
+def customer_transaction_asset(df,  dateColumn = 'date', amountColumn = 'sales', featureColumn = 'date', IDColumn = 'customer'):
+
+    import gc
+    from IPython.display import display
+    
+    for groupColumn in [None,...]:
+        for time_period_in_days in [7,14,21,30,60,90,150,180,210,240,270,300,330,360]:
+            try:
+                print('Results for ' + str(time_period_in_days) + ' days before today, ')
+                df1 = unique_count_of_feature_over_a_specified_time_period(df, time_period_in_days, dateColumn, amountColumn, featureColumn, IDColumn, groupColumn)
+                df2 = purchase_amount_of_feature_over_a_specified_time_period(df, time_period_in_days, dateColumn, amountColumn, featureColumn, IDColumn, groupColumn)
+                
+                ans = pd.concat([df1, df2], keys = ['Count', 'Sum'], axis=1)
+                gc.collect()
+            
+                #ans = display(ans.head()) #if the output is too long
+                ans = display(ans)
+                
+            except ValueError:
+                ans = print('Caught ValueError exception. No records for the stated timeframe.' + '\n')
+            
+    return ans
