@@ -1,5 +1,3 @@
-## 1) Transaction Customer Asset
-
 #### Insights 1 - Unique Count Function
 
 This insight is the unique count function of a specified feature over a stated period of days. The default parameters are stated for the function below. There are possibly two dataframe outputs out of this function:-
